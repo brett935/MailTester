@@ -7,6 +7,7 @@ import time #for timestamp on error logs
 
 valid = [] #holds list of verified email addresses
 invalid = [] #holds list of invalid email addresses
+cantValidate = [] #holds a list of email addresses that dont support being validated
 outlookList = [] #holds list of emails imported from Outlook CSV
 
 #test an email address using mailtester.com, has one paramater (email to be tested)
@@ -22,25 +23,35 @@ def testAddress(email):
      
         response = urllib2.urlopen(request).read()
     
-        searchString=['E-mail address is valid']
-    
+        searchString=['E-mail address is valid'] #string to search for to detect if the email was valid
+        errorString=['503 Service Unavailable'] #string to search for to detect a timeout because to many request from same IP address
+        cantValidateString=["Server doesn't allow e-mail address verification"] #string to search for to detect if the server doesnt support email validation
+        
         if any(x in response for x in searchString):
             #print "valid email"
             valid.append(email)
+
+        elif any(x in response for x in cantValidateString):
+            #print "server doesnt support email validation"
+            cantValidate.append(email)
+            
+        elif any(x in response for x in errorString):
+            error = "Server Timeout because to many request from same IP address -"
+            error += time.asctime() #add timestamp to error message
+            timeOutError(error + " " + email) #add timeout message to log
+            input (error + " Press Enter to exit")
+            sys.exit(error)
         
         else:
             #print "invalid email"
             invalid.append(email)
+    except urllib2.HTTPError:
+        saveToFile() #if an error occurs testing an email then save all tested emails up to that point
+        timeOutError(email) #add email that caused a problem to the error log
     except:
         saveToFile() #if an error occurs testing an email then save all tested emails up to that point
-        emailTime = email + " " + time.asctime() #add timestamp to email
-        errorEmailTest(emailTime) #add email that caused a problem to the error log
-        errorString=['503'] #string to search for to detect a timeout because to many request from same IP address
-        if any(x in response for x in errorString):
-            error = "Server Timeout because to many request from same IP address -"
-            error += time.asctime() #add timestamp to error message
-            timeOutError(email) #add timeout message to log
-            sys.exit(error)
+        unknownError(email) #if an error occurs testing an email then save all tested emails up to that point
+        
 
 #imports emails from a Outlook formatted CSV file
 def readOutlookCSV2013():
@@ -71,7 +82,7 @@ def readOutlookCSV2010():
 
 def testOutlookList():
     print " "
-    print "TESTING ADDRESSES"
+    print "####TESTING ADDRESSES####"
     print "Emails addresses in CSV file: "
     #iterate through list of emails from the Outlook CSV and test each of them individually
     for x in outlookList:
@@ -93,19 +104,30 @@ def saveToFile():
     for x in invalid:
         i.write(x)
         i.write("\n") #seperate emails by a new line
-    
-    #i.close()
+    i.close()
 
+    #save emails that cant be validated to a file
+    c = open( 'cantValidate.txt', 'w')
+    for x in cantValidate:
+        c.write(x)
+        c.write("\n")
+    c.close()
+    
 def errorEmailTest(email):
-    error = "An error occured when trying to test:  "
-    error += email #add email to error string
+    error = "Couldn't validate this email because server doesn't support validation:  "
+    error += email + time.asctime() #add email to error string
     errorLog(error)
     
 def timeOutError(email):
-    error = "timed out on "
-    error += email
+    error = "Timed out on: "
+    error += email + " " + time.asctime()
     errorLog(error)
 
+def unknownError(email):
+    error = "An unknown error occured: "
+    error += email + " " + time.asctime()
+    errorLog(error)
+    
 def errorLog(error):
     e = open( 'errors.txt', 'a')
     e.write(error)
@@ -125,7 +147,7 @@ def main():
 
     #display valid email addresses from valid email list
     print " "
-    print "VALID: "
+    print "####VALID: "
     count = 0
     for x in valid:
         print valid[count]
@@ -134,7 +156,7 @@ def main():
     print " "
 
     #display invalid email addresses from invalid email list
-    print "INVALID: "
+    print "####INVALID: "
     count = 0
     for x in invalid:
         print invalid[count]

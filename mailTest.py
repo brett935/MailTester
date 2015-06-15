@@ -33,11 +33,13 @@ def testAddress(email):
             invalid.append(email)
     except:
         saveToFile() #if an error occurs testing an email then save all tested emails up to that point
-        emailTime = email + time.asctime() #add timestamp to email
-        errorLog(emailTime) #add email that caused a problem to the error log
+        emailTime = email + " " + time.asctime() #add timestamp to email
+        errorEmailTest(emailTime) #add email that caused a problem to the error log
+        errorString=['503'] #string to search for to detect a timeout because to many request from same IP address
         if any(x in response for x in errorString):
             error = "Server Timeout because to many request from same IP address -"
             error += time.asctime() #add timestamp to error message
+            timeOutError(email) #add timeout message to log
             sys.exit(error)
 
 #imports emails from a Outlook formatted CSV file
@@ -94,13 +96,21 @@ def saveToFile():
     
     #i.close()
 
-def errorLog(email):
-    e = open( 'errors.txt', 'a')
+def errorEmailTest(email):
     error = "An error occured when trying to test:  "
     error += email #add email to error string
+    errorLog(error)
+    
+def timeOutError(email):
+    error = "timed out on "
+    error += email
+    errorLog(error)
+
+def errorLog(error):
+    e = open( 'errors.txt', 'a')
     e.write(error)
     e.write("\n") #seperate errors by new line
-    e.close()
+    e.close
     
 def main():
     choice = raw_input("Enter 1 for Outlook 2013 CSV: \n Enter 2 for Outlook 2010 CSV:\n")

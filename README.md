@@ -1,4 +1,4 @@
-#mailTester 
+#mailTester
 
 README:
 
@@ -21,5 +21,5 @@ README:
 			--invalid.txt: emails here are either invalid or the server does not support email validation
 			--errors.txt: error messages are listed here along with the email that caused the problem and a timestamp
 			
-	BUGS:
-		Doesn't support Outlook 2010 yet and has bugs when reporting errors
+	Bugs:
+		If an email address server doesn't support verification then the email goes into the invalid.txt file along with the addresses that don't exist

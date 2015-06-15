@@ -1,4 +1,5 @@
 #mailTester
+#this program was developed on Python 2.7.10
 
 README:
 

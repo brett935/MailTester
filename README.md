@@ -1,7 +1,4 @@
-# MailTester
-Uses MailTester.com to batch test emails exported to CSV
-
-#mailTester version 1
+#mailTester 
 
 README:
 

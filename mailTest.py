@@ -1,11 +1,9 @@
-#
-#
-#Working on fixing function readOutlookCSV2010(), readOutlookCSV2013() does work
-#
-
+#developed on python 2.7.10
 
 import urllib2
 import urllib
+import sys #for sys.exit("Error message")
+import time #for timestamp on error logs
 
 valid = [] #holds list of verified email addresses
 invalid = [] #holds list of invalid email addresses
@@ -13,25 +11,34 @@ outlookList = [] #holds list of emails imported from Outlook CSV
 
 #test an email address using mailtester.com, has one paramater (email to be tested)
 def testAddress(email):
-    query_args = { 'email':email }
+    try:
+        query_args = { 'email':email }
      
-    url = 'http://mailtester.com/testmail.php'
+        url = 'http://mailtester.com/testmail.php'
      
-    data = urllib.urlencode(query_args)
+        data = urllib.urlencode(query_args)
+         
+        request = urllib2.Request(url, data)
      
-    request = urllib2.Request(url, data)
-     
-    response = urllib2.urlopen(request).read()
+        response = urllib2.urlopen(request).read()
     
-    searchString=['E-mail address is valid']
+        searchString=['E-mail address is valid']
     
-    if any(x in response for x in searchString):
-        #print "valid email"
-        valid.append(email)
+        if any(x in response for x in searchString):
+            #print "valid email"
+            valid.append(email)
         
-    else:
-        #print "invalid email"
-        invalid.append(email)
+        else:
+            #print "invalid email"
+            invalid.append(email)
+    except:
+        saveToFile() #if an error occurs testing an email then save all tested emails up to that point
+        emailTime = email + time.asctime() #add timestamp to email
+        errorLog(emailTime) #add email that caused a problem to the error log
+        if any(x in response for x in errorString):
+            error = "Server Timeout because to many request from same IP address -"
+            error += time.asctime() #add timestamp to error message
+            sys.exit(error)
 
 #imports emails from a Outlook formatted CSV file
 def readOutlookCSV2013():
@@ -86,6 +93,14 @@ def saveToFile():
         i.write("\n") #seperate emails by a new line
     
     #i.close()
+
+def errorLog(email):
+    e = open( 'errors.txt', 'a')
+    error = "An error occured when trying to test:  "
+    error += email #add email to error string
+    e.write(error)
+    e.write("\n") #seperate errors by new line
+    e.close()
     
 def main():
     choice = raw_input("Enter 1 for Outlook 2013 CSV: \n Enter 2 for Outlook 2010 CSV:\n")

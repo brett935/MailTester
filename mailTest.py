@@ -4,11 +4,13 @@ import urllib2
 import urllib
 import sys #for sys.exit("Error message")
 import time #for timestamp on error logs and pause
+import xml.etree.ElementTree as ET  #for parsing XML files
 
 valid = [] #holds list of verified email addresses
 invalid = [] #holds list of invalid email addresses
 cantValidate = [] #holds a list of email addresses that dont support being validated
 outlookList = [] #holds list of emails imported from Outlook CSV
+xmlList = [] #holds list of emails imported from XML file
 waitTime = 0 #time to wait between testing emails, this keeps a server from blacklisting you after too many tries
 
 #test an email address using mailtester.com, has one paramater (email to be tested)
@@ -81,6 +83,30 @@ def readOutlookCSV2010():
             outlookList.append(email) #add email to list that contains all emails read from the Outlook CSV file
     f.close()
 
+def readXML():
+    print " "
+    filename = raw_input('Enter the name of XML file: ')
+    tree = ET.parse(filename) #parse the file
+    root = tree.getroot() #get the root of the file
+    
+    for l in root.findall('Office_Address_List'): #get element
+        email = l.find('E-mail_x0020_Address').text #get subelement
+        email= email.strip() #strip spaces from email
+        print email
+        xmlList.append(email) #add email to list that contains all emails read from the XML file
+
+
+
+def testXMLList():
+    print " "
+    print "####TESTING ADDRESSES####"
+    print "Emails addresses in CSV file: "
+    #iterate through list of emails from the XML file and test each of them individually
+    for x in xmlList:
+        print x
+        testAddress(x)
+        time.sleep(waitTime) #pause so that the server gets a break between test and doesn't blacklist you 
+
 def testOutlookList():
     print " "
     print "####TESTING ADDRESSES####"
@@ -137,17 +163,21 @@ def errorLog(error):
     e.close
     
 def main():
-    choice = raw_input("Enter 1 for Outlook 2013 CSV: \n Enter 2 for Outlook 2010 CSV:\n")
+    choice = raw_input("Enter 1 for Outlook 2013 CSV: \nEnter 2 for Outlook 2010 CSV: \nEnter 3 for XML from Access 2007-2013: \n")
     if choice=="1":
         print "You chose Outlook 2013 CSV"
         readOutlookCSV2013() #call function that reads emails from Outlook CSV file
     elif choice =="2":
         print "You chose Outlook 2010 CSV"
         readOutlookCSV2010()
+    elif choice =="3":
+        print "You chose XML"
+        readXML()
 
     waitTime = input("\nEnter the amount of seconds you want to wait between email test (Default=0, use a higher value if you keep getting timed out errors): ")
                        
     testOutlookList() #call function that test emails from Outlook email list
+    testXMLList() #call function that test emails from XML email list
 
     #display valid email addresses from valid email list
     print " "

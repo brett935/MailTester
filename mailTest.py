@@ -3,12 +3,13 @@
 import urllib2
 import urllib
 import sys #for sys.exit("Error message")
-import time #for timestamp on error logs
+import time #for timestamp on error logs and pause
 
 valid = [] #holds list of verified email addresses
 invalid = [] #holds list of invalid email addresses
 cantValidate = [] #holds a list of email addresses that dont support being validated
 outlookList = [] #holds list of emails imported from Outlook CSV
+waitTime = 0 #time to wait between testing emails, this keeps a server from blacklisting you after too many tries
 
 #test an email address using mailtester.com, has one paramater (email to be tested)
 def testAddress(email):
@@ -87,7 +88,8 @@ def testOutlookList():
     #iterate through list of emails from the Outlook CSV and test each of them individually
     for x in outlookList:
         print x
-        testAddress(x) 
+        testAddress(x)
+        time.sleep(waitTime) #pause so that the server gets a break between test and doesn't blacklist you
 
 def saveToFile():
     print " "
@@ -142,6 +144,8 @@ def main():
     elif choice =="2":
         print "You chose Outlook 2010 CSV"
         readOutlookCSV2010()
+
+    waitTime = input("\nEnter the amount of seconds you want to wait between email test (Default=0, use a higher value if you keep getting timed out errors): ")
                        
     testOutlookList() #call function that test emails from Outlook email list
 

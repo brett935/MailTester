@@ -21,14 +21,20 @@ def testAddress(email):
         url = 'http://mailtester.com/testmail.php'
      
         data = urllib.urlencode(query_args)
+        time.sleep(waitTime)######temporary delay between steps for testing
          
         request = urllib2.Request(url, data)
+        time.sleep(waitTime)######temporary delay between steps for testing
+
      
         response = urllib2.urlopen(request).read()
+        time.sleep(waitTime)######temporary delay between steps for testing
+
     
         searchString=['E-mail address is valid'] #string to search for to detect if the email was valid
-        errorString=['503 Service Unavailable'] #string to search for to detect a timeout because to many request from same IP address
+        errorString=['503 Service Unavailable'] #string to search for to detect being blacklisted because to many request from same IP address
         cantValidateString=["Server doesn't allow e-mail address verification"] #string to search for to detect if the server doesnt support email validation
+        timedOutString=['Connection timed out'] #string to search for to detect if the server timed out
         
         if any(x in response for x in searchString):
             #print "valid email"
@@ -39,15 +45,19 @@ def testAddress(email):
             cantValidate.append(email)
             
         elif any(x in response for x in errorString):
-            error = "Server Timeout because to many request from same IP address -"
-            error += time.asctime() #add timestamp to error message
-            timeOutError(error + " " + email) #add timeout message to log
-            input (error + " Press Enter to exit")
+            input ("Server Blacklisted  because to many request from same IP address - Press Enter to exit")
+            blacklistError(email)
             sys.exit(error)
+            
+        elif any(x in response for x in timedOutString):
+            timeOutError(error)
+            time.sleep(5) #wait before next test so hopefully it won't time out too
+              
         
         else:
             #print "invalid email"
             invalid.append(email)
+            
     except urllib2.HTTPError:
         saveToFile() #if an error occurs testing an email then save all tested emails up to that point
         timeOutError(email) #add email that caused a problem to the error log
@@ -159,6 +169,11 @@ def timeOutError(email):
 def unknownError(email):
     error = "An unknown error occured: "
     error += email + " " + time.asctime()
+    errorLog(error)
+
+def blacklistError(email):
+    error = "Server Blacklisted  because to many request from same IP address -"
+    error += time.asctime() #add timestamp to error message
     errorLog(error)
     
 def errorLog(error):

@@ -51,10 +51,15 @@ def testAddress(email):
     except urllib2.HTTPError:
         saveToFile() #if an error occurs testing an email then save all tested emails up to that point
         timeOutError(email) #add email that caused a problem to the error log
+    except (KeyboardInterrupt, SystemExit):
+        saveToFile() #if user stops program wile testing an email then save all tested emails up to that point
+        print "## Program sucessfully stopped and data saved ##"
+        raw_input ('Press the Enter key to exit')
+        sys.exit("Program exited")
     except:
         saveToFile() #if an error occurs testing an email then save all tested emails up to that point
         unknownError(email) #if an error occurs testing an email then save all tested emails up to that point
-        
+
 
 #imports emails from a Outlook formatted CSV file
 def readOutlookCSV2013():
@@ -163,6 +168,7 @@ def errorLog(error):
     e.close
     
 def main():
+    print "At any point during testing you can press CONTROL-C to stop the proogram and save the data up to that point. \n"
     choice = raw_input("Enter 1 for Outlook 2013 CSV: \nEnter 2 for Outlook 2010 CSV: \nEnter 3 for XML from Access 2007-2013: \n")
     if choice=="1":
         print "You chose Outlook 2013 CSV"

@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<dataroot xmlns:od="urn:schemas-microsoft-com:officedata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xsi:noNamespaceSchemaLocation="Office_Address_List.xsd" generated="2015-06-15T08:47:31">
+<Office_Address_List>
+<First_x0020_Name>Some</First_x0020_Name>
+<Last_x0020_Name>One</Last_x0020_Name>
+<E-mail_x0020_Address>someone@gmail.com</E-mail_x0020_Address>
+</Office_Address_List>
+<Office_Address_List>
+<First_x0020_Name>A</First_x0020_Name>
+<Last_x0020_Name>Person</Last_x0020_Name>
+<E-mail_x0020_Address>person@gmail.com</E-mail_x0020_Address>
+</Office_Address_List>
+<Office_Address_List>
+<First_x0020_Name>Contact</First_x0020_Name>
+<Last_x0020_Name>Them</Last_x0020_Name>
+<E-mail_x0020_Address>contact@gmail.com</E-mail_x0020_Address>
+</Office_Address_List>
+</dataroot>

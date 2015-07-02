@@ -1,0 +1,33 @@
+At any point during testing you can press CONTROL-C to stop the proogram and save the data up to that point. 
+
+Enter 1 for Outlook 2013 CSV: 
+Enter 2 for Outlook 2010 CSV: 
+Enter 3 for XML from Access 2007-2013: 
+3
+You chose XML
+ 
+Enter the name of XML file: x.xml
+someone@gmail.com
+person@gmail.com
+contact@gmail.com
+
+Enter the amount of seconds you want to wait between email test (Default=0, use a higher value if you keep getting timed out errors): 4
+ 
+####TESTING ADDRESSES####
+Emails addresses in CSV file: 
+ 
+####TESTING ADDRESSES####
+Emails addresses in CSV file: 
+someone@gmail.com
+person@gmail.com
+contact@gmail.com
+ 
+####VALID: 
+contact@gmail.com
+ 
+####INVALID: 
+someone@gmail.com
+person@gmail.com
+ 
+Complete.
+Press the Enter key to exit
